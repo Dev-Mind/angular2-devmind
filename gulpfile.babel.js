@@ -134,7 +134,7 @@ gulp.task('styles', () => {
   return gulp.src(paths.less)
     .pipe($.newer('.tmp/styles'))
     .pipe($.sourcemaps.init())
-    .pipe($.less().on('error', $.sass.logError))
+    .pipe($.less())
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
     .pipe(gulp.dest('.tmp/styles'))
     // Concatenate and minify styles
