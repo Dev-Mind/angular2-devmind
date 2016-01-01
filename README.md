@@ -8,3 +8,5 @@ Voici les tâches Gulp si vous voulez utiliser le projet
 
 * **default** construire le projet
 * **serve** lancer l'application en local
+
+Comme il faut toujours un exemple concret, je me suis basé sur le CFP de la conférence [Mix-IT](https://github.com/mix-it/cesar). L'application permet de lancer une application et de naviguer au sein de 3 pages.

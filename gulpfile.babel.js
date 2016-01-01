@@ -62,14 +62,19 @@ const paths = {
   assets: {
     images: [
       'src/assets/img/**/*.*'
-    ]
+    ],
+    fonts: [
+      'src/assets/fonts/**/*.*',
+      'node_modules/material-design-icons/iconfont/*.*'
+    ],
   },
   templates: ['src/**/*.html'],
   build: {
     root : 'dist',
     images : 'dist/img',
+    fonts : 'dist/fonts',
     scripts : 'dist/scripts',
-    styles: 'dist/styles',
+    styles: 'dist',
   }
 };
 
@@ -90,6 +95,10 @@ gulp.task('images', () =>
     .pipe(gulp.dest(paths.build.images))
     .pipe($.size({title: 'images'}))
 );
+gulp.task('fonts', () =>  {
+  return gulp.src(paths.assets.fonts)
+    .pipe(gulp.dest(paths.build.fonts));
+});
 
 // Copy all files at the root level (src)
 gulp.task('copy', () =>
@@ -127,21 +136,23 @@ gulp.task('styles', () => {
     .pipe($.replace('"Roboto","Arial",sans-serif', '"Roboto","Arial"'))
     .pipe($.replace('63,81,181', '69,90,100'))
     .pipe($.concat('vendors.css'))
-    .pipe(gulp.dest('.tmp/styles'))
-    .pipe(gulp.dest(paths.build.styles));
+    .pipe(gulp.dest('.tmp'))
+    .pipe(gulp.dest(paths.build.root));
 
   // For best performance, don't add Sass partials to `gulp.src`
   return gulp.src(paths.less)
-    .pipe($.newer('.tmp/styles'))
     .pipe($.sourcemaps.init())
     .pipe($.less())
+    .pipe($.replace('assets/img', '../img'))
+    .pipe($.replace('../../node_modules/material-design-icons/iconfont', '../fonts'))
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
-    .pipe(gulp.dest('.tmp/styles'))
+    //.pipe($.concat('app.css'))
+    .pipe(gulp.dest('.tmp'))
     // Concatenate and minify styles
     .pipe($.if('*.css', $.minifyCss()))
     .pipe($.size({title: 'styles'}))
     .pipe($.sourcemaps.write('./'))
-    .pipe(gulp.dest(paths.build.styles));
+    .pipe(gulp.dest(paths.build.root));
 });
 
 gulp.task('ts',  () => {
@@ -234,7 +245,7 @@ gulp.task('serve', ['vendors', 'polyfill', 'ts', 'styles'], () => {
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
     // https: true,
-    server: ['.tmp', 'src'],
+    server: ['.tmp', 'src', 'src/assets'],
     port: 3000
   });
 
@@ -264,7 +275,7 @@ gulp.task('serve:dist', ['default'], () =>
 gulp.task('default', ['clean'], cb =>
   runSequence(
     'styles',
-    ['lint', 'html', 'vendors', 'polyfill', 'ts', 'images', 'copy'],
+    ['lint', 'html', 'vendors', 'polyfill', 'ts', 'images', 'fonts', 'copy'],
     cb
   )
 );
